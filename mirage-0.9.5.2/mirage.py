@@ -1,5 +1,6 @@
 # $HeadURL: http://svn.berlios.de/svnroot/repos/mirageiv/branches/mirage-0.9.x/mirage.py $
 # $Id: mirage.py 337 2011-02-13 22:40:05Z fredricj $
+#let's add vi-like movement also
 
 __version__ = "0.9.5.2"
 
@@ -401,6 +402,18 @@ class Base:
             ('Next', None, '', 'Down', _('Next Image'), self.goto_next_image),
             ('PgUp', None, '', 'Page_Up', _('Previous Image'), self.goto_prev_image),
             ('PgDn', None, '', 'Page_Down', _('Next Image'), self.goto_next_image),
+            ('sK', None, '', '<Shift>K', _('Previous Image'), self.goto_prev_image),
+            ('sJ', None, '', '<Shift>J', _('Next Image'), self.goto_next_image),
+            ('cK', None, '', '<Ctrl>K', _('Zoom in Image'), self.zoom_in),
+            ('cJ', None, '', '<Ctrl>J', _('Zoom out Image'), self.zoom_out),
+
+            ('J', None, '', 'J', _('Mode down'), self.move_down),
+            ('K', None, '', 'K', _('Move Up'), self.move_up),
+
+            ('L', None, '', 'L', _('Mode right'), self.move_right),
+            ('H', None, '', 'H', _('Move left'), self.move_left),
+            ('sH', None, '', '<Shift>H', _('Previous Image'), self.goto_prev_image),
+            ('sL', None, '', '<Shift>L', _('Next Image'), self.goto_next_image),
             ('BackSpace', None, '', 'BackSpace', _('Previous Image'), self.goto_prev_image),
             ('OriginalSize', None, '', '1', _('1:1'), self.zoom_1_to_1_action),
             ('ZoomIn', None, '', 'KP_Add', _('Zoom In'), self.zoom_in),
@@ -517,6 +530,16 @@ class Base:
                   <menuitem action="Next"/>
                   <menuitem action="PgUp"/>
                   <menuitem action="PgDn"/>
+                  <menuitem action="sK"/>
+                  <menuitem action="sJ"/>
+                  <menuitem action="cK"/>
+                  <menuitem action="cJ"/>
+                  <menuitem action="sL"/>
+                  <menuitem action="sH"/>
+                  <menuitem action="L"/>
+                  <menuitem action="K"/>
+                  <menuitem action="J"/>
+                  <menuitem action="H"/>
                   <menuitem action="OriginalSize"/>
                   <menuitem action="BackSpace"/>
                   <menuitem action="ZoomIn"/>
@@ -3103,6 +3126,42 @@ class Base:
             self.last_image_action_was_fit = False
             self.put_zoom_image_to_window(False)
             self.update_statusbar()
+
+    def move_down(self, action):
+        # move horizontally on the selected image:
+        yadjust = self.layout.get_vadjustment()
+        newy = yadjust.value + 10
+        if newy >= yadjust.lower and newy <= yadjust.upper - yadjust.page_size:
+            yadjust.set_value(newy)
+            #self.goto_prev_image(None)
+            self.layout.set_vadjustment(yadjust)
+
+    def move_up(self, action):
+        # move horizontally on the selected image:
+        yadjust = self.layout.get_vadjustment()
+        newy = yadjust.value - 10
+        if newy >= yadjust.lower and newy <= yadjust.upper - yadjust.page_size:
+            yadjust.set_value(newy)
+            #self.goto_prev_image(None)
+            self.layout.set_vadjustment(yadjust)
+
+    def move_right(self, action):
+        # move horizontally on the selected image:
+        xadjust = self.layout.get_hadjustment()
+        newx = xadjust.value + 10
+        if newx >= xadjust.lower and newx <= xadjust.upper - xadjust.page_size:
+            xadjust.set_value(newx)
+            #self.goto_prev_image(None)
+            self.layout.set_hadjustment(xadjust)
+
+    def move_left(self, action):
+        # move horizontally on the selected image:
+        xadjust = self.layout.get_hadjustment()
+        newx = xadjust.value - 10
+        if newx >= xadjust.lower and newx <= xadjust.upper - xadjust.page_size:
+            xadjust.set_value(newx)
+            #self.goto_prev_image(None)
+            self.layout.set_hadjustment(xadjust)
 
     def zoom_out(self, action):
         if self.currimg_name != "" and self.UIManager.get_widget('/MainMenu/ViewMenu/Out').get_property('sensitive'):
